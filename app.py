@@ -1,68 +1,50 @@
-# resume_parser.py
-
+import nltk
+nltk.download('stopwords')
+from flask import Flask, request, jsonify
 import os
-import json
-from dotenv import load_dotenv
-from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_community.document_loaders import PyPDFLoader, Docx2txtLoader, TextLoader
-from langchain.prompts import PromptTemplate
+from extractor import ExtractFromResume
+from werkzeug.utils import secure_filename
 
-load_dotenv()
+try:
+    nltk.data.find('corpora/stopwords')
+except nltk.downloader.DownloadError:
+    nltk.download('stopwords')
 
-llm = ChatGoogleGenerativeAI(
-    model="gemini-1.5-flash",
-    google_api_key=os.getenv("GOOGLE_API_KEY")
-)
+app = Flask(__name__)
 
-PROMPT_TEMPLATE = """
-You are an expert resume parser. Given the resume text, extract the following fields and return a single valid JSON object:
+UPLOAD_FOLDER = 'uploads'
+ALLOWED_EXTENSIONS = {'pdf', 'docx', 'doc', 'txt'}
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-{
-  "Name": "...",
-  "Email": "...",
-  "Phone": "...",
-  "LinkedIn": "...",
-  "Skills": [...],
-  "Education": [...],
-  "Experience": [...],
-  "Projects": [...],
-  "Certifications": [...],
-  "Languages": [...]
-}
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
 
-Rules:
-- If a field cannot be found, set its value to "No idea".
-- Return ONLY valid JSON (no extra commentary).
-- Keep lists as arrays, and keep Experience/Projects as arrays of short strings.
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-Resume text:
-{text}
-"""
+@app.route('/extract', methods=['POST'])
+def extract_api():
+    if 'file' not in request.files:
+        return jsonify({"error": "No file provided"}), 400
+    
+    file = request.files['file']
+    
+    if file.filename == '' or not allowed_file(file.filename):
+        return jsonify({"error": "Invalid file type"}), 400
 
-prompt = PromptTemplate(template=PROMPT_TEMPLATE, input_variables=["text"])
-
-def load_resume(file_path: str, filename: str):
-    if filename.endswith(".pdf"):
-        loader = PyPDFLoader(file_path)
-    elif filename.endswith(".docx"):
-        loader = Docx2txtLoader(file_path)
-    elif filename.endswith(".txt"):
-        loader = TextLoader(file_path)
-    else:
-        return None
-    return loader.load()
-
-def parse_resume_from_path(file_path: str, filename: str):
-    docs = load_resume(file_path, filename)
-    if not docs:
-        return {"error": "Unsupported file type."}
-
-    full_text = "\n\n".join([d.page_content for d in docs])
-    formatted_prompt = prompt.format(text=full_text)
-
-    response = llm.invoke(formatted_prompt)
+    filepath = None
     try:
-        parsed_json = json.loads(response.content)
-        return parsed_json
-    except json.JSONDecodeError:
-        return {"raw_response": response.content}
+        filename = secure_filename(file.filename)
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(filepath)
+        result = ExtractFromResume(filepath)
+        return jsonify({"skills": result})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        if filepath and os.path.exists(filepath):
+            os.remove(filepath)
+
+if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=False)
