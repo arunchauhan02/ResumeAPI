@@ -52,7 +52,7 @@ def load_resume(file_path: str, filename: str):
         return None
     return loader.load()
 
-def parse_resume_from_path(file_path: str, filename: str):
+def ExtractFromResume(file_path: str, filename: str):
     docs = load_resume(file_path, filename)
     if not docs:
         return {"error": "Unsupported file type."}
