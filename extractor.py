@@ -38,7 +38,7 @@ def ExtractFromResume(file_path: str, filename: str):
     full_text = "\n\n".join([d.page_content for d in docs])
     
     formatted_prompt = PROMPT_TEMPLATE + full_text
-    final_text = PromptTemplate(template=formatted_prompt, input_variables=["text"])
+    final_text = PromptTemplate(template=prompt, input_variables=["text"])
     
     response = llm.invoke(final_text)
     try:
