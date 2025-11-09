@@ -40,7 +40,7 @@ Resume text:
 {text}
 """
 
-prompt = PromptTemplate(template=PROMPT_TEMPLATE, input_variables=["text"])
+prompt = PromptTemplate(template="Give me name and skills in json fromat", input_variables=["text"])
 
 def load_resume(file_path: str, filename: str):
     if filename.endswith(".pdf"):
