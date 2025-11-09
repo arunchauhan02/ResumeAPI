@@ -59,6 +59,7 @@ def ExtractFromResume(file_path: str, filename: str):
         return {"error": "Unsupported file type."}
 
     full_text = "\n\n".join([d.page_content for d in docs])
+    return {"r":full_text}
     formatted_prompt = prompt.format(text=full_text)
 
     response = llm.invoke(formatted_prompt)
