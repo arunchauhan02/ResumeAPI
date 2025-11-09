@@ -17,7 +17,7 @@ llm = ChatGoogleGenerativeAI(
 
 PROMPT_TEMPLATE = "You are an expert resume parser. Given the resume text, extract the following fields and return a single valid JSON object: { "Name": "...", "Email": "...","Phone": "...", "LinkedIn": "...", "Skills": [...], "Education": [...], "Experience": [...], "Projects": [...], "Certifications": [...], "Languages": [...] } Rules:- If a field cannot be found, set its value to 'No idea'. - Return ONLY valid JSON (no extra commentary). - Keep lists as arrays, and keep Experience/Projects as arrays of short strings. Resume text: {text}"
 
-prompt = PromptTemplate(template="Give me name and skills in json fromat", input_variables=["text"])
+prompt = PromptTemplate(template=PROMPT_TEMPLATE, input_variables=["text"])
 
 def load_resume(file_path: str, filename: str):
     if filename.endswith(".pdf"):
