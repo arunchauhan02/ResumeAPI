@@ -2,3 +2,4 @@ flask
 pyresparser
 spacy
 nltk
+python-docx
