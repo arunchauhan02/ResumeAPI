@@ -4,6 +4,7 @@ import os
 
 def ExtractFromResume(input_file_path):
     try:
+        nlp = spacy.load("en_core_web_sm")
         doc = Document()
         with open(input_file_path, 'r', encoding='utf-8', errors='ignore') as f:
             doc.add_paragraph(f.read())
