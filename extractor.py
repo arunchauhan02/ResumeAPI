@@ -44,4 +44,5 @@ def ExtractFromResume(file_path: str, filename: str):
         parsed_json = json.loads(response.content)
         return parsed_json
     except json.JSONDecodeError:
-        return {"raw_response": response.content}
+        parsed_json = json.loads(response.content)
+        return {"raw_response": parsed_json}
