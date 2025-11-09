@@ -1,23 +1,9 @@
-# render.yaml
 services:
-- type: web
-  name: resumeapi
-  env: python
-  buildCommand: pip install -r requirements.txt
-  startCommand: pip install https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-2.3.1/en_core_web_sm-2.3.1.tar.gz && python ./app.py
-  # --- ADD SYSTEM PACKAGES HERE ---
-  autoDeploy: true
-  plan: starter
-  numInstances: 1
-  previewsEnabled: true
-  disk:
-    name: resume-disk
-    mountPath: /var/data
-  
-  # Crucial for fixing BLIS/Spacy build errors
-  buildPacks:
-    - python
-    - name: apt
-      packages:
-        - build-essential
-        - python3-dev
+  - type: web
+    name: resume-parser-flask
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python app.py
+    envVars:
+      - key: GOOGLE_API_KEY
+        value: your_actual_api_key_here
