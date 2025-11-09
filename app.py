@@ -1,4 +1,5 @@
-
+import nltk
+nltk.download('stopwords')
 from flask import Flask, request, jsonify
 from extractor import ExtractFromResume # import your function
 import nltk
