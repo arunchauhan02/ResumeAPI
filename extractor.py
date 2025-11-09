@@ -15,7 +15,7 @@ llm = ChatGoogleGenerativeAI(
     google_api_key=os.getenv("GOOGLE_API_KEY")
 )
 
-PROMPT_TEMPLATE = "You are an expert resume parser. Given the resume text, extract the fields Name, Email, Phone, LinkedIn, Skills, Education, Experience, Projects, Certifications, Languages and return a single valid JSON object. Rules:- If a field cannot be found, set its value to No idea. - Return ONLY valid JSON (no extra commentary). - Keep lists as arrays, and keep Experience/Projects as arrays of short strings. Resume text: {text}"
+PROMPT_TEMPLATE = "You are an expert resume parser. Given the resume text, extract the fields Name, Email, Phone, LinkedIn, Skills, Education, Experience, Projects, Certifications, Languages and return a single valid JSON object. Rules:- If a field cannot be found, set its value to No idea. - Return ONLY valid JSON (no extra commentary). - Keep lists as arrays, and keep Experience/Projects as arrays of short strings. Resume text: {}"
 
 prompt = PromptTemplate(template=PROMPT_TEMPLATE, input_variables=["text"])
 
@@ -37,10 +37,9 @@ def ExtractFromResume(file_path: str, filename: str):
 
     full_text = "\n\n".join([d.page_content for d in docs])
     
-    formatted_prompt = PROMPT_TEMPLATE + full_text
-    final_text = PromptTemplate(template=prompt, input_variables=["text"])
+    formatted_prompt = prompt.format(full_text)
     
-    response = llm.invoke(final_text)
+    response = llm.invoke(formatted_prompt)
     try:
         parsed_json = json.loads(response.content)
         return parsed_json
