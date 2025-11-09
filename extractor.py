@@ -1,9 +1,10 @@
 
+
 from pyresparser import ResumeParser
 import os
 
 def ExtractFromResume(text):
-    temp_path = 'temp_resume_text.txt'
+    temp_path = 'temp_resume_text.docx'
 
     # Save the input text temporarily
     with open(temp_path, 'w', encoding='utf-8') as f:
