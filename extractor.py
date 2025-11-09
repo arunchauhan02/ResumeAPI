@@ -37,9 +37,10 @@ def ExtractFromResume(file_path: str, filename: str):
 
     full_text = "\n\n".join([d.page_content for d in docs])
     
-    formatted_prompt = prompt + full_text
+    formatted_prompt = PROMPT_TEMPLATE + full_text
+    final_text = PromptTemplate(template=formatted_prompt, input_variables=["text"])
     
-    response = llm.invoke(formatted_prompt)
+    response = llm.invoke(final_text)
     try:
         parsed_json = json.loads(response.content)
         return parsed_json
