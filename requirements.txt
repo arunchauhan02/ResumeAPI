@@ -1,5 +1,5 @@
 flask
 pyresparser
-spacy
+spacy==2.3.5
 nltk
 python-docx
