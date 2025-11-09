@@ -61,7 +61,7 @@ def ExtractFromResume(file_path: str, filename: str):
     full_text = "\n\n".join([d.page_content for d in docs])
     
     formatted_prompt = prompt.format(text=full_text)
-    return {"r":formatted_prompt}
+    
     response = llm.invoke(formatted_prompt)
     try:
         parsed_json = json.loads(response.content)
