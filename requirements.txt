@@ -3,4 +3,4 @@ python-dotenv
 nltk
 langchain
 langchain-google-genai
-langchain-community
+langchain-community==0.1.16
